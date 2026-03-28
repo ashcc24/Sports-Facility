@@ -1,0 +1,59 @@
+.dashboard { min-height: 100vh; display: flex; flex-direction: column; }
+.dash-header {
+  background: #0f3460; color: white;
+  padding: 1rem 2rem; display: flex;
+  justify-content: space-between; align-items: center;
+  font-size: 1.1rem;
+}
+.dash-header.admin { background: #1b1b2f; }
+.dash-header button {
+  background: #e94560; color: white; border: none;
+  padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer;
+}
+.dash-nav {
+  background: #16213e; display: flex;
+  gap: 0.25rem; padding: 0.5rem 1rem; flex-wrap: wrap;
+}
+.dash-nav button {
+  background: transparent; color: #aaa;
+  border: none; padding: 0.5rem 1rem;
+  border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+}
+.dash-nav button.active { background: #e94560; color: white; }
+.dash-nav button:hover:not(.active) { background: #0f3460; color: white; }
+.dash-body { padding: 1.5rem; flex: 1; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.card {
+  background: white; border-radius: 12px;
+  padding: 1.25rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.card h3 { color: #0f3460; margin-bottom: 0.5rem; }
+.card p { color: #666; margin: 0.2rem 0; font-size: 0.9rem; }
+.card .fee { font-size: 1.2rem; font-weight: bold; color: #e94560; margin: 0.5rem 0; }
+.card button {
+  margin-top: 0.75rem; width: 100%; padding: 0.6rem;
+  background: #0f3460; color: white; border: none;
+  border-radius: 8px; cursor: pointer;
+}
+.card button:hover { background: #e94560; }
+.card.trophy { text-align: center; }
+.trophy-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+.status-ok { color: green; font-weight: bold; }
+.status-busy { color: red; font-weight: bold; }
+.data-table { width: 100%; border-collapse: collapse; background: white;
+  border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+.data-table th { background: #0f3460; color: white; padding: 0.85rem 1rem; text-align: left; }
+.data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #f0f0f0; }
+.data-table tr:hover td { background: #f8f9ff; }
+.badge { background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; }
+.badge.paid { background: #dcfce7; color: #166534; }
+.badge.pending { background: #fef9c3; color: #854d0e; }
+.del-btn { background: #fee2e2; color: #dc2626; border: none;
+  padding: 0.3rem 0.75rem; border-radius: 6px; cursor: pointer; }
+.add-btn { background: #0f3460; color: white; border: none;
+  padding: 0.6rem 1.25rem; border-radius: 8px; cursor: pointer; margin-bottom: 1rem; }
+.msg-banner {
+  background: #dcfce7; color: #166534; padding: 0.75rem 1.5rem;
+  display: flex; justify-content: space-between;
+}
+.msg-banner button { background: none; border: none; cursor: pointer; font-size: 1rem; }
