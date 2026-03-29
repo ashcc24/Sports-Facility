@@ -23,13 +23,13 @@ export default function StudentDashboard({ user, setUser }) {
 
   const enroll = async (course) => {
     try {
-      await API.enrollments.post('/', {
+      await API.enrollments.post('', {
         student: { studentId: user.studentId },
         course: { courseId: course.courseId },
         enrollmentDate: new Date().toISOString().split('T')[0],
         status: 'Active'
       });
-      await API.payments.post('/', {
+      await API.payments.post('', {
         student: { studentId: user.studentId },
         course: { courseId: course.courseId },
         amount: course.fee,
@@ -37,8 +37,8 @@ export default function StudentDashboard({ user, setUser }) {
         status: 'Pending'
       });
       setMsg(`Enrolled in ${course.sport?.sportName} course! Payment pending.`);
-      API.enrollments.get(`/student/${user.studentId}`).then(r => setMyEnrollments(r.data));
-    } catch { setMsg('Enrollment failed.'); }
+      API.enrollments.get(`/student/${user.studentId}`).then(r => setMyEnrollments(r.data)).catch(()=>{});
+    } catch(e) { setMsg('Enrollment failed: ' + e.message); }
   };
 
   const bookCourt = async (court) => {
@@ -47,14 +47,14 @@ export default function StudentDashboard({ user, setUser }) {
     const end = prompt('End time (e.g. 10:00):');
     if (!date || !start || !end) return;
     try {
-      await API.bookings.post('/', {
+      await API.bookings.post('', {
         student: { studentId: user.studentId },
         court: { courtId: court.courtId },
         bookingDate: date, startTime: start, endTime: end
       });
       setMsg(`Court "${court.location}" booked!`);
-      API.bookings.get(`/student/${user.studentId}`).then(r => setMyBookings(r.data));
-    } catch { setMsg('Booking failed.'); }
+      API.bookings.get(`/student/${user.studentId}`).then(r => setMyBookings(r.data)).catch(()=>{});
+    } catch(e) { setMsg('Booking failed: ' + e.message); }
   };
 
   return (
