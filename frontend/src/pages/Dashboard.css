@@ -22,6 +22,8 @@
 .dash-nav button.active { background: #e94560; color: white; }
 .dash-nav button:hover:not(.active) { background: #0f3460; color: white; }
 .dash-body { padding: 1.5rem; flex: 1; }
+
+/* ── Card Grid (courts, achievements) ── */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
 .card {
   background: white; border-radius: 12px;
@@ -38,22 +40,58 @@
 .card button:hover { background: #e94560; }
 .card.trophy { text-align: center; }
 .trophy-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
+/* ── Courses grouped by sport ── */
+.sport-section { margin-bottom: 2.5rem; }
+
+.sport-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #0f3460;
+  border-bottom: 3px solid #e94560;
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.course-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.course-row .card {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+/* ── Status ── */
 .status-ok { color: green; font-weight: bold; }
 .status-busy { color: red; font-weight: bold; }
+
+/* ── Tables ── */
 .data-table { width: 100%; border-collapse: collapse; background: white;
   border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
 .data-table th { background: #0f3460; color: white; padding: 0.85rem 1rem; text-align: left; }
 .data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #f0f0f0; }
 .data-table tr:hover td { background: #f8f9ff; }
+
+/* ── Badges ── */
 .badge { background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; }
 .badge.paid { background: #dcfce7; color: #166534; }
 .badge.pending { background: #fef9c3; color: #854d0e; }
+
+/* ── Buttons ── */
 .del-btn { background: #fee2e2; color: #dc2626; border: none;
   padding: 0.3rem 0.75rem; border-radius: 6px; cursor: pointer; }
 .add-btn { background: #0f3460; color: white; border: none;
   padding: 0.6rem 1.25rem; border-radius: 8px; cursor: pointer; margin-bottom: 1rem; }
+
+/* ── Messages ── */
 .msg-banner {
   background: #dcfce7; color: #166534; padding: 0.75rem 1.5rem;
   display: flex; justify-content: space-between;
 }
+.msg-banner.msg-error { background: #fee2e2; color: #dc2626; }
 .msg-banner button { background: none; border: none; cursor: pointer; font-size: 1rem; }

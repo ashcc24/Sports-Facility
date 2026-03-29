@@ -10,4 +10,5 @@ export const API = {
   bookings:     axios.create({ baseURL: `${BASE}/bookings` }),
   payments:     axios.create({ baseURL: `${BASE}/payments` }),
   achievements: axios.create({ baseURL: `${BASE}/achievements` }),
+  performances: axios.create({ baseURL: `${BASE}/performances` }),
 };
