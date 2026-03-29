@@ -20,6 +20,7 @@
   width: 100%; padding: 0.75rem 1rem;
   margin-bottom: 1rem; border: 1px solid #ddd;
   border-radius: 8px; font-size: 1rem;
+  box-sizing: border-box;
 }
 .login-box button {
   width: 100%; padding: 0.85rem;
@@ -28,6 +29,8 @@
   font-size: 1rem; cursor: pointer;
 }
 .login-box button:hover { background: #e94560; }
+.login-box button:disabled { background: #aaa; cursor: not-allowed; }
 .error { color: red; margin-bottom: 0.5rem; }
+.success { color: green; margin-bottom: 0.5rem; }
 .hint { margin-top: 1rem; font-size: 0.8rem; color: #888;
   background: #f8f8f8; padding: 0.75rem; border-radius: 8px; }

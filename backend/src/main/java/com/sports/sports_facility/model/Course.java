@@ -3,6 +3,8 @@ package com.sports.sports_facility.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collection;
+
 @Entity @Table(name = "COURSE")
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Course {
@@ -18,4 +20,8 @@ public class Course {
     private Integer duration;
     private Double fee;
     @Column(name = "MAX_STUDENTS") private Integer maxStudents;
+
+    public Collection<Object> getEnrollments() {
+        return null;
+    }
 }
