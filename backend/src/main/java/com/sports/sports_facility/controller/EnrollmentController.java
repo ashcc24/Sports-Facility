@@ -28,12 +28,20 @@ public class EnrollmentController {
         Long studentId = e.getStudent().getStudentId();
         Long courseId = e.getCourse().getCourseId();
 
-        // Prevent duplicate enrollment
         boolean alreadyEnrolled = repo.existsByStudentStudentIdAndCourseCourseId(studentId, courseId);
         if (alreadyEnrolled) {
             return ResponseEntity.badRequest().body("You are already enrolled in this course.");
         }
 
         return ResponseEntity.ok(repo.save(e));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        repo.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

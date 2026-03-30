@@ -69,40 +69,30 @@ export default function AdminDashboard({ user, setUser }) {
 
   // ── COURSES ──
   const addCourse = async () => {
-    // Show available sports
     const sportsList = sports.map(s => `${s.sportId} = ${s.sportName}`).join('\n');
     const sportId = prompt(`Enter Sport ID:\n\n${sportsList}`);
     if (!sportId) return;
-
-    // Show only coaches matching the selected sport
     const matchingCoaches = coaches.filter(c => c.sport?.sportId === Number(sportId));
     const coachesList = matchingCoaches.length > 0
       ? matchingCoaches.map(c => `${c.coachId} = ${c.name}`).join('\n')
-      : 'No coaches added yet for this sport — you can assign one later';
-    const coachId = prompt(`Enter Coach ID (press Cancel to skip):\n\n${coachesList}`);
-
+      : 'No coaches added yet for this sport';
+    const coachId     = prompt(`Enter Coach ID (press Cancel to skip):\n\n${coachesList}`);
     const startTime   = prompt('Start Time (e.g. 08:00):');
     const endTime     = prompt('End Time (e.g. 10:00):');
     const duration    = prompt('Duration (months):');
     const fee         = prompt('Fee (₹):');
     const maxStudents = prompt('Max Students:');
-
     if (!startTime || !endTime || !fee) return;
-
     const payload = {
       sport: { sportId: Number(sportId) },
-      startTime,
-      endTime,
+      startTime, endTime,
       duration: Number(duration) || 1,
       fee: Number(fee),
       maxStudents: Number(maxStudents) || 10,
     };
-
-    // Only attach coach if admin entered one
     if (coachId && coachId.trim() !== '') {
       payload.coach = { coachId: Number(coachId) };
     }
-
     await API.courses.post('', payload).catch(()=>{});
     showMsg('Course added!'); load();
   };
@@ -134,12 +124,17 @@ export default function AdminDashboard({ user, setUser }) {
         status: 'Pending'
       }).catch(()=>{});
     }
-    showMsg('Enrollment added with payment record!'); load();
+    showMsg('Enrollment added!'); load();
   };
+
   const deleteEnrollment = async (id) => {
     if (!window.confirm('Delete this enrollment?')) return;
-    await API.enrollments.delete(`/${id}`).catch(()=>{});
-    showMsg('Enrollment deleted!'); load();
+    try {
+      await API.enrollments.delete(`/${id}`);
+      showMsg('Enrollment deleted!'); load();
+    } catch(e) {
+      showMsg('Delete failed: ' + (e.response?.data?.message || e.message));
+    }
   };
 
   // ── PAYMENTS ──
@@ -174,7 +169,6 @@ export default function AdminDashboard({ user, setUser }) {
     showMsg('Booking deleted!'); load();
   };
 
-  // ── COURSES grouped by sport ──
   const coursesBySport = courses.reduce((acc, c) => {
     const sport = c.sport?.sportName || 'Unknown';
     if (!acc[sport]) acc[sport] = [];
@@ -234,14 +228,12 @@ export default function AdminDashboard({ user, setUser }) {
           </>
         )}
 
-        {/* COURSES — grouped by sport, card layout */}
+        {/* COURSES */}
         {tab==='courses' && (
           <div>
             <button className="add-btn" onClick={addCourse}>+ Add Course</button>
             {courses.length === 0 && (
-              <p style={{ color: '#888', padding: '1rem' }}>
-                No courses yet. Click "+ Add Course" to create one.
-              </p>
+              <p style={{ color: '#888', padding: '1rem' }}>No courses yet. Click "+ Add Course" to create one.</p>
             )}
             {Object.entries(coursesBySport).map(([sportName, sportCourses]) => (
               <div key={sportName} className="sport-section">
@@ -256,7 +248,6 @@ export default function AdminDashboard({ user, setUser }) {
                       <p>📅 Duration: {c.duration} months</p>
                       <p className="fee">₹{c.fee}</p>
                       <p>👥 Max Students: {c.maxStudents}</p>
-                      {/* Assign Coach — shows only coaches of same sport */}
                       <button
                         style={{ marginTop: '0.5rem', width: '100%', padding: '0.5rem', background: '#0f3460', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
                         onClick={async () => {
@@ -269,10 +260,7 @@ export default function AdminDashboard({ user, setUser }) {
                           await API.courses.patch(`/${c.courseId}/assign-coach/${coachId}`).catch(()=>{});
                           showMsg('Coach assigned!'); load();
                         }}
-                      >
-                        🔗 Assign Coach
-                      </button>
-                      {/* Remove Coach — only shown if coach is assigned */}
+                      >🔗 Assign Coach</button>
                       {c.coach && (
                         <button
                           style={{ marginTop: '0.4rem', width: '100%', padding: '0.5rem', background: '#fff7ed', color: '#c2410c', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
@@ -281,17 +269,12 @@ export default function AdminDashboard({ user, setUser }) {
                             await API.courses.patch(`/${c.courseId}/remove-coach`).catch(()=>{});
                             showMsg('Coach removed!'); load();
                           }}
-                        >
-                          ✕ Remove Coach
-                        </button>
+                        >✕ Remove Coach</button>
                       )}
-                      {/* Delete Course */}
                       <button
                         style={{ marginTop: '0.4rem', width: '100%', padding: '0.5rem', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
                         onClick={() => deleteCourse(c.courseId)}
-                      >
-                        🗑 Delete Course
-                      </button>
+                      >🗑 Delete Course</button>
                     </div>
                   ))}
                 </div>
@@ -323,15 +306,16 @@ export default function AdminDashboard({ user, setUser }) {
                     <td>
                       {payment
                         ? <span className={`badge ${payment.status === 'Paid' ? 'paid' : 'pending'}`}>{payment.status}</span>
-                        : <span className="badge">—</span>
-                      }
+                        : <span className="badge">—</span>}
                     </td>
                     <td>
                       {payment && payment.status !== 'Paid' && (
                         <button onClick={() => markPaid(payment.full)}>✅ Mark Paid</button>
                       )}
                     </td>
-                    <td><button className="del-btn" onClick={()=>deleteEnrollment(e.enrollmentId)}>Delete</button></td>
+                    <td>
+                      <button className="del-btn" onClick={() => deleteEnrollment(e.enrollmentId)}>Delete</button>
+                    </td>
                   </tr>
                 );
               })}</tbody>
@@ -374,7 +358,7 @@ export default function AdminDashboard({ user, setUser }) {
           </>
         )}
 
-        {/* PERFORMANCE — sport-specific fields */}
+        {/* PERFORMANCE */}
         {tab==='performance' && (
           <>
             <button className="add-btn" onClick={async () => {
@@ -383,17 +367,14 @@ export default function AdminDashboard({ user, setUser }) {
               const matches   = prompt('Matches Played:');
               const wins      = prompt('Wins:');
               if (!studentId || !sportId) return;
-
               const sport = sports.find(s => s.sportId === Number(sportId));
               const sportName = sport?.sportName?.toUpperCase();
-
               const payload = {
                 student: { studentId: Number(studentId) },
                 sport: { sportId: Number(sportId) },
                 matchesPlayed: Number(matches) || 0,
                 wins: Number(wins) || 0,
               };
-
               if (sportName === 'CRICKET') {
                 payload.runsScored   = Number(prompt('Runs Scored:')) || 0;
                 payload.wicketsTaken = Number(prompt('Wickets Taken:')) || 0;
@@ -406,7 +387,6 @@ export default function AdminDashboard({ user, setUser }) {
                 payload.assists  = Number(prompt('Assists:')) || 0;
                 payload.rebounds = Number(prompt('Rebounds:')) || 0;
               }
-
               await API.performances.post('', payload).catch(()=>{});
               showMsg('Performance record added!'); load();
             }}>+ Add Performance</button>

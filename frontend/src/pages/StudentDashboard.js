@@ -68,6 +68,25 @@ export default function StudentDashboard({ user, setUser }) {
     }
   };
 
+  const deleteEnrollment = async (enrollmentId) => {
+    if (!window.confirm('Cancel this enrollment?')) return;
+    try {
+      await API.enrollments.delete(`/${enrollmentId}`);
+      showMsg('Enrollment cancelled!', 'info');
+      refreshEnrollments();
+      refreshPayments();
+    } catch(e) { showMsg('Failed to cancel enrollment', 'error'); }
+  };
+
+  const deleteBooking = async (bookingId) => {
+    if (!window.confirm('Cancel this booking?')) return;
+    try {
+      await API.bookings.delete(`/${bookingId}`);
+      showMsg('Booking cancelled!', 'info');
+      API.bookings.get(`/student/${user.studentId}`).then(r => setMyBookings(r.data)).catch(() => {});
+    } catch(e) { showMsg('Failed to cancel booking', 'error'); }
+  };
+
   const bookCourt = async (court) => {
     const date = prompt('Enter date (YYYY-MM-DD):');
     const start = prompt('Start time (e.g. 08:00):');
@@ -87,50 +106,12 @@ export default function StudentDashboard({ user, setUser }) {
     }
   };
 
-  // Group courses by sport
   const coursesBySport = courses.reduce((acc, c) => {
     const sport = c.sport?.sportName || 'Unknown';
     if (!acc[sport]) acc[sport] = [];
     acc[sport].push(c);
     return acc;
   }, {});
-
-  // Build performance table columns dynamically per sport
-  const getPerformanceDetails = (p) => {
-    const sport = p.sport?.sportName?.toUpperCase();
-    if (sport === 'CRICKET') {
-      return (
-        <>
-          <td>{p.runsScored ?? '—'}</td>
-          <td>{p.wicketsTaken ?? '—'}</td>
-          <td>{p.catchesTaken ?? '—'}</td>
-          <td>—</td>
-          <td>—</td>
-        </>
-      );
-    } else if (sport === 'BADMINTON') {
-      return (
-        <>
-          <td>—</td>
-          <td>—</td>
-          <td>—</td>
-          <td>{p.pointsScored ?? '—'}</td>
-          <td>{p.setsWon ?? '—'}</td>
-        </>
-      );
-    } else if (sport === 'BASKETBALL') {
-      return (
-        <>
-          <td>—</td>
-          <td>—</td>
-          <td>—</td>
-          <td>{p.pointsScoredBasketball ?? '—'}</td>
-          <td>{p.assists ?? '—'} Ast / {p.rebounds ?? '—'} Reb</td>
-        </>
-      );
-    }
-    return <><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></>;
-  };
 
   return (
     <div className="dashboard">
@@ -153,7 +134,7 @@ export default function StudentDashboard({ user, setUser }) {
       )}
       <div className="dash-body">
 
-        {/* COURSES TAB — grouped by sport */}
+        {/* COURSES TAB */}
         {tab === 'courses' && (
           <div>
             {Object.entries(coursesBySport).map(([sportName, sportCourses]) => (
@@ -216,6 +197,7 @@ export default function StudentDashboard({ user, setUser }) {
                 <th>Enrollment Date</th>
                 <th>Status</th>
                 <th>Payment Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -234,6 +216,11 @@ export default function StudentDashboard({ user, setUser }) {
                         </span>
                       ) : '—'}
                     </td>
+                    <td>
+                      <button className="del-btn" onClick={() => deleteEnrollment(e.enrollmentId)}>
+                        Cancel
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -244,13 +231,14 @@ export default function StudentDashboard({ user, setUser }) {
         {/* MY BOOKINGS TAB */}
         {tab === 'my-bookings' && (
           <table className="data-table">
-            <thead><tr><th>Court</th><th>Date</th><th>From</th><th>To</th></tr></thead>
+            <thead><tr><th>Court</th><th>Date</th><th>From</th><th>To</th><th>Action</th></tr></thead>
             <tbody>{myBookings.map(b => (
               <tr key={b.bookingId}>
                 <td>{b.court?.location}</td>
                 <td>{b.bookingDate}</td>
                 <td>{b.startTime}</td>
                 <td>{b.endTime}</td>
+                <td><button className="del-btn" onClick={() => deleteBooking(b.bookingId)}>Cancel</button></td>
               </tr>
             ))}</tbody>
           </table>
@@ -290,7 +278,7 @@ export default function StudentDashboard({ user, setUser }) {
           </div>
         )}
 
-        {/* PERFORMANCE TAB — sport-specific columns */}
+        {/* PERFORMANCE TAB */}
         {tab === 'performance' && (
           performances.length === 0
             ? <p style={{ color: '#888', padding: '1rem' }}>No performance records yet. Enroll in a course to get started!</p>

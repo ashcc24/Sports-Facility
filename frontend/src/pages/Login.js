@@ -57,7 +57,7 @@ export default function Login({ setUser, setRole, onGoToSignup }) {
         </div>
         <div className="hint">
           <b>Admin:</b> admin@sports.com / admin123<br />
-          <b>Student:</b> rahul@email.com / pass123
+          <b>Student:</b> maya@email.com / maya
         </div>
       </div>
     </div>
